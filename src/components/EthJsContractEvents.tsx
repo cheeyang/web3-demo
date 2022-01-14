@@ -1,7 +1,7 @@
 import { useContext, useEffect, useState } from "react";
 import { EthersContext } from "../contexts/ethers";
 
-const ContractEvents = () => {
+const EthJsContractEvents = () => {
   const { connectAragon, antContract, provider } = useContext(EthersContext);
   const [logArr, setLogArr] = useState<any>([]);
 
@@ -46,4 +46,4 @@ const ContractEvents = () => {
   );
 };
 
-export default ContractEvents;
+export default EthJsContractEvents;

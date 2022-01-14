@@ -1,4 +1,4 @@
-import { useContext, useEffect, useState } from "react";
+import { useContext, useState } from "react";
 import { EthersContext } from "../contexts/ethers";
 import styled from "styled-components";
 import { AiOutlineArrowRight } from "react-icons/ai";
@@ -36,63 +36,16 @@ const initialTxnStatus = {
   error: undefined,
 };
 
-const SendTransactionANT = () => {
-  const {
-    signer,
-    signerAddress,
-    provider,
-    dispatch,
-    antContractRW,
-    connectAragonRW,
-  } = useContext(EthersContext);
+const EthJsSendETH = () => {
+  const { signer, signerAddress, signerBalance, provider, dispatch } =
+    useContext(EthersContext);
   const [sendAmt, setSendAmt] = useState<string>("");
   const [address, setAddress] = useState<string>("");
-  const [mintValue, setMintValue] = useState<ethers.BigNumber>(
-    ethers.BigNumber.from(0)
-  );
-  const [antBalance, setAntBalance] = useState<ethers.BigNumber | undefined>(
-    undefined
-  );
-  const [totalSupply, setTotalSupply] = useState<ethers.BigNumber | undefined>(
-    undefined
-  );
   const [recipientBalance, setRecipientBalance] = useState<
     undefined | ethers.BigNumber
   >(undefined);
   const [transactionStatus, setTransactionStatus] = useState(initialTxnStatus);
   const [transactionReceipt, setTransactionReceipt] = useState<any>(undefined);
-
-  useEffect(() => {
-    if (signerAddress) {
-      console.log("connecting to RW aragon");
-      connectAragonRW();
-    }
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [signerAddress]);
-  useEffect(() => {
-    const init = async () => {
-      try {
-        const antBalance = await antContractRW?.balanceOf(signerAddress);
-        setAntBalance(antBalance);
-        const totalSupply = await antContractRW?.totalSupply();
-        setTotalSupply(totalSupply);
-      } catch (err) {
-        console.error(err);
-      }
-    };
-    init();
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [antContractRW, provider]);
-
-  const handleMint = async () => {
-    console.log("antContractRW: ", antContractRW);
-    try {
-      await antContractRW?.mint(ethers.BigNumber.from(mintValue));
-    } catch (err) {
-      console.error(err);
-    }
-  };
-
   const handleChangeAddress = (e: any) => {
     const val = e?.target?.value;
     setAddress(val);
@@ -108,9 +61,12 @@ const SendTransactionANT = () => {
     console.log("sending transaction...");
     console.log("type of sendAmt: ", typeof sendAmt);
     try {
-      const antsToSend = ethers.utils.parseEther(sendAmt);
+      const ethersToSend = ethers.utils.parseEther(sendAmt);
       console.log("sending eth to address: ", address);
-      const txResponse = await antContractRW?.transfer(address, antsToSend);
+      const txResponse = await signer.sendTransaction({
+        to: address,
+        value: ethersToSend,
+      });
       setTransactionStatus((txnStatus) => ({ ...txnStatus, processing: true }));
       const txnReceipt = await txResponse.wait(); // waits for 1 confirmation by default
       setTransactionStatus((txnStatus) => ({
@@ -138,40 +94,22 @@ const SendTransactionANT = () => {
         <>
           <StyledContainer>
             <div className="transaction-details source">
-              <div className="row">
-                <label>Total Supply: </label>
-                <div>{totalSupply?.toString()}</div>
-              </div>
               <div>Your Wallet Address: </div>
               <div>{signerAddress}</div>
               <div className="row">
-                <label>Balance (ANT Wei): </label>
-                <div>{antBalance?.toString()}</div>
+                <label>Balance (Wei): </label>
+                <div>{signerBalance?.toString()}</div>
               </div>
               <div className="row">
-                <label>Balance (ANT): </label>
+                <label>Balance (ETH): </label>
                 <div>
-                  {ethers.utils.formatUnits(
-                    (antBalance as ethers.BigNumber) || 0
+                  {ethers.utils.formatEther(
+                    (signerBalance as ethers.BigNumber) || 0
                   )}
                 </div>
               </div>
 
-              <div className="row">
-                <label>Mint</label>
-                <button type="button" onClick={handleMint}>
-                  Mint
-                </button>
-                <label htmlFor="mint-amount">Amount:</label>
-                <input
-                  name="mint-amount"
-                  type={"number"}
-                  value={mintValue.toString()}
-                  onChange={(e) => {
-                    setMintValue(ethers.BigNumber.from(e?.target?.value));
-                  }}
-                />
-              </div>
+              <div className="row"></div>
               <div className="row"></div>
             </div>
             <AiOutlineArrowRight size={20} />
@@ -191,7 +129,7 @@ const SendTransactionANT = () => {
                   value={sendAmt}
                   onChange={handleChangeAmount}
                 ></input>
-                <span>ANT</span>
+                <span>ETH</span>
               </div>
 
               <button type="submit">
@@ -241,4 +179,4 @@ const SendTransactionANT = () => {
     </form>
   );
 };
-export default SendTransactionANT;
+export default EthJsSendETH;

@@ -1,7 +1,7 @@
 import { useContext } from "react";
-import ContractEvents from "../components/ContractEvents";
-import SendTransactionANT from "../components/SendTransactionANT";
-import SendTransactionETH from "../components/SendTransactionETH";
+import EthJsContractEvents from "../components/EthJsContractEvents";
+import EthJsSendANT from "../components/EthJsSendANT";
+import EthJsSendETH from "../components/EthJsSendETH";
 import TopCurrencies from "../components/TopCurrencies";
 import { EthersContext } from "../contexts/ethers";
 import { truncateAddress } from "../utils";
@@ -21,11 +21,11 @@ const EthersDashboard = () => {
           : "Connect To Metamask"}
       </button>
       <h1>Make A ETH Transaction</h1>
-      <SendTransactionETH />
+      <EthJsSendETH />
       <br />
       <br />
       <h1>Make an ANT Transaction</h1>
-      <SendTransactionANT />
+      <EthJsSendANT />
       <br />
       <br />
       <h1>Top 5 Currencies</h1>
@@ -33,7 +33,7 @@ const EthersDashboard = () => {
       <br />
       <br />
       <h1>Contract Events</h1>
-      <ContractEvents />
+      <EthJsContractEvents />
     </div>
   );
 };

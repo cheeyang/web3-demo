@@ -1,15 +1,16 @@
-import "./App.css";
 import {
   BrowserRouter as Router,
+  Redirect,
   Route,
   Switch,
-  Redirect,
 } from "react-router-dom";
-import Navbar from "./components/Navbar";
-import { PATHS, PrivateRoute } from "./config/routes";
 import styled from "styled-components";
-import EthersContextProvider from "./contexts/ethers";
+import "./App.css";
+import Navbar from "./components/Navbar";
+import { PATHS } from "./config/routes";
 import AuthContextProvider from "./contexts/auth";
+import EthersContextProvider from "./contexts/ethers";
+import Web3ContextProvider from "./contexts/web3js";
 import EthersDashboard from "./pages/EthersDashboard";
 import Web3Dashboard from "./pages/Web3Dashboard";
 
@@ -38,31 +39,33 @@ function App() {
     <StyledAppContainer className="App">
       <AuthContextProvider>
         <EthersContextProvider>
-          <Router>
-            <Navbar />
-            <StyledContent className="content">
-              <Switch>
-                {/* <Route path={PATHS.Login} component={LoginPage} /> */}
-                <Route
-                  exact
-                  path={PATHS.EthersDashboard}
-                  component={EthersDashboard}
-                />
-                <Route
-                  exact
-                  path={PATHS.Web3Dashboard}
-                  component={Web3Dashboard}
-                />
-                {/* <PrivateRoute
+          <Web3ContextProvider>
+            <Router>
+              <Navbar />
+              <StyledContent className="content">
+                <Switch>
+                  {/* <Route path={PATHS.Login} component={LoginPage} /> */}
+                  <Route
+                    exact
+                    path={PATHS.EthersDashboard}
+                    component={EthersDashboard}
+                  />
+                  <Route
+                    exact
+                    path={PATHS.Web3Dashboard}
+                    component={Web3Dashboard}
+                  />
+                  {/* <PrivateRoute
                 exact
                 path={PATHS.Dashboard}
                 component={DashboardPage}
               /> */}
-                {/* <Redirect to={PATHS.Login} /> */}
-                <Redirect to={PATHS.Web3Dashboard} />
-              </Switch>
-            </StyledContent>
-          </Router>
+                  {/* <Redirect to={PATHS.Login} /> */}
+                  <Redirect to={PATHS.Web3Dashboard} />
+                </Switch>
+              </StyledContent>
+            </Router>
+          </Web3ContextProvider>
         </EthersContextProvider>
       </AuthContextProvider>
     </StyledAppContainer>
